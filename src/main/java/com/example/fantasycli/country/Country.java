@@ -8,6 +8,7 @@ import lombok.*;
 @Getter
 @EqualsAndHashCode
 @ToString
+@Table(name = "countries")
 public class Country {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
