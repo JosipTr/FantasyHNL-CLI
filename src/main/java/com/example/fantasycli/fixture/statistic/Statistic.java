@@ -38,8 +38,8 @@ public class Statistic {
 	private Penalty penalty;
 	@OneToOne(cascade = CascadeType.PERSIST)
 	private Goal goal;
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	private Player player;
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	private Fixture fixture;
 }

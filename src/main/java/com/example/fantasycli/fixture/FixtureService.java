@@ -1,5 +1,11 @@
 package com.example.fantasycli.fixture;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.jline.utils.Timeout;
 import org.slf4j.*;
 
 import org.springframework.shell.standard.ShellComponent;
@@ -131,57 +137,74 @@ public class FixtureService extends GlobalService {
 
 		return score;
 	}
+
 	@ShellMethod(key = "get statistics")
-	public void getStatistic() {
+	public void getStatistic() throws IOException, InterruptedException {
 		var apiRepository = super.getApiRepository();
 		var gson = super.getGson();
 
-		var body = apiRepository.getPlayerStatistic(1034682);
-		var fixture = fixtureRepository.getReferenceById(1034682);
+		List<Fixture> fixtures = fixtureRepository.findAll();
+		var count = 1;
+		var limit = 9;
+		for (var fixture : fixtures) {
+//			TimeUnit.SECONDS.sleep(5);
+			var body = apiRepository.getPlayerStatistic(fixture.getId());
+			if (body == null || body.isEmpty()) continue ;
 
-		JsonObject bodyObject = gson.fromJson(body, JsonObject.class);
+			JsonObject bodyObject = gson.fromJson(body, JsonObject.class);
 
-		var responseArray = bodyObject.getAsJsonArray("response");
+//			FileWriter writer = new FileWriter("./src/main/resources/data/players" + fixture.getId() + ".json");
+//			FileWriter idWriter = new FileWriter("./src/main/resources/data/fixture_ids.txt");
+//			var fixtureId = fixture.getId();
+//			
+//			writer.write(bodyObject.toString());
+//			idWriter.write(String.valueOf(fixtureId););
+//			writer.close();
+//			idWriter.close();
 
-		for (var element : responseArray) {
-			var playersArray = element.getAsJsonObject().getAsJsonArray("players");
-			for (var playerElement : playersArray) {
-				var pArray = playerElement.getAsJsonObject().getAsJsonArray("players");
-				for (var pElement : pArray) {
-					var player = getPlayer(pElement);
-					var statisticArray = pElement.getAsJsonObject().getAsJsonArray("statistics");
-					for (var statElement : statisticArray) {
-						if (player == null) break;
-						var statisticObject = statElement.getAsJsonObject();
-						var statistic = gson.fromJson(statisticObject, Statistic.class);
-						var game = getGame(statisticObject);
-						var shot = getShot(statisticObject);
-						var goal = getGoal(statisticObject);
-						var pass = getPass(statisticObject);
-						var tackle = getTackle(statisticObject);
-						var dribble = getDribble(statisticObject);
-						var penalty = getPenalty(statisticObject);
-						var card = getCard(statisticObject);
-						var foul = getFoul(statisticObject);
-						var duel = getDuel(statisticObject);
-						statistic.setTackle(tackle);
-						statistic.setDribble(dribble);
-						statistic.setPenalty(penalty);
-						statistic.setCard(card);
-						statistic.setFoul(foul);
-						statistic.setDuel(duel);
-						statistic.setPass(pass);
-						statistic.setGoal(goal);
-						statistic.setGame(game);
-						statistic.setShot(shot);
-						statistic.setFixture(fixture);
-						statistic.setPlayer(player);
-						fixture.getStatistic().add(statistic);
-						player.getStatistics().add(statistic);
-						
+			var responseArray = bodyObject.getAsJsonArray("response");
+
+			for (var element : responseArray) {
+				var playersArray = element.getAsJsonObject().getAsJsonArray("players");
+				for (var playerElement : playersArray) {
+					var pArray = playerElement.getAsJsonObject().getAsJsonArray("players");
+					for (var pElement : pArray) {
+						var player = getPlayer(pElement);
+						var statisticArray = pElement.getAsJsonObject().getAsJsonArray("statistics");
+						for (var statElement : statisticArray) {
+							if (player == null)
+								break;
+							var statisticObject = statElement.getAsJsonObject();
+							var statistic = gson.fromJson(statisticObject, Statistic.class);
+							var game = getGame(statisticObject);
+							var shot = getShot(statisticObject);
+							var goal = getGoal(statisticObject);
+							var pass = getPass(statisticObject);
+							var tackle = getTackle(statisticObject);
+							var dribble = getDribble(statisticObject);
+							var penalty = getPenalty(statisticObject);
+							var card = getCard(statisticObject);
+							var foul = getFoul(statisticObject);
+							var duel = getDuel(statisticObject);
+							statistic.setTackle(tackle);
+							statistic.setDribble(dribble);
+							statistic.setPenalty(penalty);
+							statistic.setCard(card);
+							statistic.setFoul(foul);
+							statistic.setDuel(duel);
+							statistic.setPass(pass);
+							statistic.setGoal(goal);
+							statistic.setGame(game);
+							statistic.setShot(shot);
+							statistic.setFixture(fixture);
+							statistic.setPlayer(player);
+							fixture.getStatistic().add(statistic);
+							player.getStatistics().add(statistic);
+
+						}
 					}
 				}
-			}
+			}	
 		}
 	}
 
@@ -196,10 +219,11 @@ public class FixtureService extends GlobalService {
 		var playerObject = element.getAsJsonObject().getAsJsonObject("player");
 		var playerId = playerObject.get("id").getAsInt();
 		var player = playerRepository.findById(playerId);
-		if (player.isEmpty()) return null;
+		if (player.isEmpty())
+			return null;
 		return player.get();
 	}
-	
+
 	private Game getGame(JsonObject statisticObject) {
 		var gameObject = statisticObject.getAsJsonObject("games");
 		var game = super.getGson().fromJson(gameObject, Game.class);
@@ -210,54 +234,54 @@ public class FixtureService extends GlobalService {
 		var object = statisticObject.getAsJsonObject("shots");
 		var shot = super.getGson().fromJson(object, Shot.class);
 		var onObject = object.get("on");
-		if (onObject.isJsonNull()) return shot;
+		if (onObject.isJsonNull())
+			return shot;
 		shot.setOn_goal(onObject.getAsInt());
 		return shot;
 	}
-	
+
 	private Goal getGoal(JsonObject statisticObject) {
 		var object = statisticObject.getAsJsonObject("goals");
 		var goal = super.getGson().fromJson(object, Goal.class);
 		return goal;
 	}
-	
+
 	private Pass getPass(JsonObject statisticObject) {
 		var object = statisticObject.getAsJsonObject("passes");
 		var pass = super.getGson().fromJson(object, Pass.class);
 		return pass;
 	}
-	
+
 	private Tackle getTackle(JsonObject statisticObject) {
-	    JsonObject tacklesObject = statisticObject.getAsJsonObject("tackles");
-	    return super.getGson().fromJson(tacklesObject, Tackle.class);
+		JsonObject tacklesObject = statisticObject.getAsJsonObject("tackles");
+		return super.getGson().fromJson(tacklesObject, Tackle.class);
 	}
 
 	private Duel getDuel(JsonObject statisticObject) {
-	    JsonObject duelsObject = statisticObject.getAsJsonObject("duels");
-	    return super.getGson().fromJson(duelsObject, Duel.class);
+		JsonObject duelsObject = statisticObject.getAsJsonObject("duels");
+		return super.getGson().fromJson(duelsObject, Duel.class);
 	}
 
 	private Dribble getDribble(JsonObject statisticObject) {
-	    JsonObject dribblesObject = statisticObject.getAsJsonObject("dribbles");
-	    return super.getGson().fromJson(dribblesObject, Dribble.class);
+		JsonObject dribblesObject = statisticObject.getAsJsonObject("dribbles");
+		return super.getGson().fromJson(dribblesObject, Dribble.class);
 	}
 
 	private Foul getFoul(JsonObject statisticObject) {
-	    JsonObject foulsObject = statisticObject.getAsJsonObject("fouls");
-	    return super.getGson().fromJson(foulsObject, Foul.class);
+		JsonObject foulsObject = statisticObject.getAsJsonObject("fouls");
+		return super.getGson().fromJson(foulsObject, Foul.class);
 	}
 
 	private Card getCard(JsonObject statisticObject) {
-	    JsonObject cardsObject = statisticObject.getAsJsonObject("cards");
-	    return super.getGson().fromJson(cardsObject, Card.class);
+		JsonObject cardsObject = statisticObject.getAsJsonObject("cards");
+		return super.getGson().fromJson(cardsObject, Card.class);
 	}
 
 	private Penalty getPenalty(JsonObject statisticObject) {
-	    JsonObject penaltyObject = statisticObject.getAsJsonObject("penalty");
-	    return super.getGson().fromJson(penaltyObject, Penalty.class);
+		JsonObject penaltyObject = statisticObject.getAsJsonObject("penalty");
+		return super.getGson().fromJson(penaltyObject, Penalty.class);
 	}
- 
-	
+
 	@ShellMethod(key = "get fixture")
 	public void getFixture() {
 		var fixture = fixtureRepository.getReferenceById(1034834);

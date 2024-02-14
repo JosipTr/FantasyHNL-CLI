@@ -82,7 +82,7 @@ public class FileApiRepositoryImpl implements ApiRepository {
 	@Override
 	public String getPlayerStatistic(int fixtureId) {
 		try {
-			String body = Files.readString(Path.of("./src/main/resources/data/fixture" + fixtureId + ".json"));
+			String body = Files.readString(Path.of("./src/main/resources/data/players" + fixtureId + ".json"));
 			return body;
 		} catch (IOException e) {
 			e.printStackTrace();
