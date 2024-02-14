@@ -6,16 +6,24 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 @Table(name = "penalties")
 public class Penalty {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private int id;
+	@EmbeddedId
+	private StatisticId id;
 	private Integer won;
 	private Integer commited;
 	private Integer scored;
 	private Integer missed;
 	private Integer saved;
+	@OneToOne
+	@MapsId
+	private Statistic statistic;
+	@Override
+	public String toString() {
+		return "Penalty [id=" + id + ", won=" + won + ", commited=" + commited + ", scored=" + scored + ", missed="
+				+ missed + ", saved=" + saved + "]";
+	}
+	
+	
 }

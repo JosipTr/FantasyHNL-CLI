@@ -6,13 +6,21 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 @Table(name = "cards")
 public class Card {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private int id;
+	@EmbeddedId
+	private StatisticId id;
 	private Integer yellow;
 	private Integer red;
+	@OneToOne
+	@MapsId
+	private Statistic statistic;
+	
+	@Override
+	public String toString() {
+		return "Card [id=" + id + ", yellow=" + yellow + ", red=" + red + "]";
+	}
+	
+	
 }

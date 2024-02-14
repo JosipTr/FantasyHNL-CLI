@@ -41,6 +41,6 @@ public class GlobalController {
 		teamService.getTeams();
 		playerService.getTeamPlayers();
 		fixtureService.getFixtures();
-//		fixtureService.getStatistic();
+		fixtureService.getStatistic();
 	}
 }

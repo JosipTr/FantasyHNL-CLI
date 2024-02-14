@@ -6,13 +6,19 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 @Table(name = "duels")
 public class Duel {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private int id;
+	@EmbeddedId
+	private StatisticId id;
 	private Integer total;
 	private Integer won;
+	@OneToOne
+	@MapsId
+	private Statistic statistic;
+	@Override
+	public String toString() {
+		return "Duel [id=" + id + ", total=" + total + ", won=" + won + "]";
+	}
+	
 }

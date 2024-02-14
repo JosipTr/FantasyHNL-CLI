@@ -6,14 +6,21 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 @Table(name = "dribbles")
 public class Dribble {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private int id;
+	@EmbeddedId
+	private StatisticId id;
 	private Integer attempts;
 	private Integer success;
 	private Integer past;
+	@OneToOne
+	@MapsId
+	private Statistic statistic;
+	
+	@Override
+	public String toString() {
+		return "Dribble [id=" + id + ", attempts=" + attempts + ", success=" + success + ", past=" + past + "]";
+	}
+	
 }

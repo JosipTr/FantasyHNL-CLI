@@ -1,9 +1,12 @@
 package com.example.fantasycli.fixture.statistic;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,15 +16,23 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 @Table(name = "goals")
 public class Goal {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private int id;
+	@EmbeddedId
+	private StatisticId id;
 	private Integer total;
 	private Integer conceded;
 	private Integer assists;
-	private Integer saves;	
+	private Integer saves;
+	@OneToOne
+	@MapsId
+	private Statistic statistic;
+	
+	@Override
+	public String toString() {
+		return "Goal [id=" + id + ", total=" + total + ", conceded=" + conceded + ", assists=" + assists + ", saves="
+				+ saves + "]";
+	}	
+	
 }
