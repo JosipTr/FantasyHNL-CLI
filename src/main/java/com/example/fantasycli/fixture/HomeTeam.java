@@ -11,15 +11,20 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 public class HomeTeam {
-
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private int home_id;
 	private Boolean winner;
 	@ManyToOne
 	@JoinColumn(name = "team_id")
 	private Team team;
+	@OneToOne
+	@MapsId
+	private Fixture fixture;
+	@Override
+	public String toString() {
+		return "HomeTeam [home_id=" + home_id + ", winner=" + winner + ", team=" + team + "]";
+	}
+	
 }

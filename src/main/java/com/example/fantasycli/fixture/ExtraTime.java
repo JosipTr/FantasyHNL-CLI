@@ -7,12 +7,19 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
 @Table(name = "extra_times")
 public class ExtraTime {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private Integer home;
 	private Integer away;
+	@OneToOne
+	@MapsId
+	private Score score;
+	@Override
+	public String toString() {
+		return "ExtraTime [id=" + id + ", home=" + home + ", away=" + away + "]";
+	}
+	
+	
 }

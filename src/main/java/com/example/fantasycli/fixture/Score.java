@@ -9,18 +9,25 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 public class Score {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private int id;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "score")
 	private HalfTime halfTime;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "score")
 	private FullTime fullTime;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "score")
 	private ExtraTime extraTime;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "score")
 	private PenaltyTime penaltyTime;
+	@OneToOne
+	@MapsId
+	private Fixture fixture;
+	@Override
+	public String toString() {
+		return "Score [id=" + id + ", halfTime=" + halfTime + ", fullTime=" + fullTime + ", extraTime=" + extraTime
+				+ ", penaltyTime=" + penaltyTime + "]";
+	}
+	
 }

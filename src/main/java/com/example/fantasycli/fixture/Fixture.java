@@ -11,9 +11,8 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
-@EqualsAndHashCode
 @ToString
+@Setter
 @Table(name = "fixtures")
 public class Fixture {
 	@Id
@@ -24,13 +23,13 @@ public class Fixture {
 	private Integer timestamp;
 	@ManyToOne
 	private Venue venue;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST,mappedBy = "fixture")
 	private GameStatus status;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private HomeTeam homeTeam;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private AwayTeam awayTeam;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private Score score;
 	@OneToMany(mappedBy = "fixture", cascade = {CascadeType.PERSIST})
 	private Set<Statistic> statistic = new HashSet<>();

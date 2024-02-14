@@ -63,7 +63,12 @@ public class FixtureService extends GlobalService {
 			var status = getStatus(fixtureJson);
 			var homeTeam = getHomeTeam(element);
 			var awayTeam = getAwayTeam(element);
-			var score = getScore(element);
+			var score = getScore(element, fixture);
+			status.setFixture(fixture);
+			homeTeam.setFixture(fixture);
+			awayTeam.setFixture(fixture);
+			score.setFixture(fixture);
+			
 
 			fixture.setVenue(venue);
 			var savedFixture = fixtureRepository.save(fixture);
@@ -118,7 +123,7 @@ public class FixtureService extends GlobalService {
 		return awayTeam;
 	}
 
-	private Score getScore(JsonElement element) {
+	private Score getScore(JsonElement element, Fixture fixture) {
 		var gson = super.getGson();
 		JsonObject scoreJson = element.getAsJsonObject().getAsJsonObject("score");
 		JsonObject halfTimeJson = scoreJson.getAsJsonObject("halftime");
