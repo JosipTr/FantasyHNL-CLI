@@ -60,19 +60,20 @@ public class FixtureService extends GlobalService {
 			var fixture = gson.fromJson(fixtureJson, Fixture.class);
 
 			var venue = getVenue(fixtureJson);
-			var status = getStatus(fixtureJson, fixture);
-			var homeTeam = getHomeTeam(element, fixture);
-			var awayTeam = getAwayTeam(element, fixture);
-			var score = getScore(element, fixture);
+			var status = getStatus(fixtureJson);
+			var homeTeam = getHomeTeam(element);
+			var awayTeam = getAwayTeam(element);
+			var score = getScore(element);
 
 			fixture.setVenue(venue);
-			fixture.setStatus(status);
-			fixture.setHomeTeam(homeTeam);
-			fixture.setAwayTeam(awayTeam);
-			fixture.setScore(score);
-
 			var savedFixture = fixtureRepository.save(fixture);
-
+			
+			
+			savedFixture.setStatus(status);
+			savedFixture.setHomeTeam(homeTeam);
+			savedFixture.setAwayTeam(awayTeam);
+			savedFixture.setScore(score);
+			
 			logger.info(savedFixture.toString());
 		}
 	}
@@ -87,7 +88,7 @@ public class FixtureService extends GlobalService {
 		return venue;
 	}
 
-	private GameStatus getStatus(JsonObject fixtureJson, Fixture fixture) {
+	private GameStatus getStatus(JsonObject fixtureJson) {
 		var statusJson = fixtureJson.get("status").getAsJsonObject();
 		var status = super.getGson().fromJson(statusJson, GameStatus.class);
 		var longStatus = statusJson.get("long").getAsString();
@@ -97,7 +98,7 @@ public class FixtureService extends GlobalService {
 		return status;
 	}
 
-	private HomeTeam getHomeTeam(JsonElement element, Fixture fixture) {
+	private HomeTeam getHomeTeam(JsonElement element) {
 		JsonObject teamsJson = element.getAsJsonObject().getAsJsonObject("teams");
 		JsonObject homeTeamJson = teamsJson.getAsJsonObject("home");
 		var teamId = homeTeamJson.get("id").getAsInt();
@@ -107,7 +108,7 @@ public class FixtureService extends GlobalService {
 		return homeTeam;
 	}
 
-	private AwayTeam getAwayTeam(JsonElement element, Fixture fixture) {
+	private AwayTeam getAwayTeam(JsonElement element) {
 		JsonObject teamsJson = element.getAsJsonObject().getAsJsonObject("teams");
 		JsonObject awayTeamJson = teamsJson.getAsJsonObject("away");
 		var teamId = awayTeamJson.get("id").getAsInt();
@@ -117,7 +118,7 @@ public class FixtureService extends GlobalService {
 		return awayTeam;
 	}
 
-	private Score getScore(JsonElement element, Fixture fixture) {
+	private Score getScore(JsonElement element) {
 		var gson = super.getGson();
 		JsonObject scoreJson = element.getAsJsonObject().getAsJsonObject("score");
 		JsonObject halfTimeJson = scoreJson.getAsJsonObject("halftime");
