@@ -42,4 +42,13 @@ public class Statistic {
 	private Player player;
 	@ManyToOne(cascade = CascadeType.MERGE)
 	private Fixture fixture;
+	
+	@Override
+	public String toString() {
+		return "Statistic [id=" + id + ", offsides=" + offsides + ", game=" + game + ", shot=" + shot + ", pass=" + pass
+				+ ", tackle=" + tackle + ", duel=" + duel + ", dribble=" + dribble + ", foul=" + foul + ", card=" + card
+				+ ", penalty=" + penalty + ", goal=" + goal + "]";
+	}
+	
+	
 }

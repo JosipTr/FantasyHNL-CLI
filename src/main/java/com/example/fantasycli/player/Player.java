@@ -13,6 +13,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name = "players")
 public class Player {
 	@Id
