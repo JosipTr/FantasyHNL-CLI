@@ -32,5 +32,10 @@ public class Fixture {
 	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private Score score;
 	@OneToMany(mappedBy = "fixture", cascade = {CascadeType.PERSIST})
-	private Set<Statistic> statistic = new HashSet<>();
+	private Set<Statistic> statistics = new HashSet<>();
+	
+	
+	public void setStat(Statistic statistic) {
+		this.statistics.add(statistic);
+	}
 	}

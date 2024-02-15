@@ -153,9 +153,9 @@ public class FixtureService extends GlobalService {
 		var gson = super.getGson();
 
 		List<Fixture> fixtures = fixtureRepository.findAll();
-		var count = 1;
-		var limit = 9;
-		var total = fixtures.size();
+//		var count = 1;
+//		var limit = 9;
+//		var total = fixtures.size();
 		for (var fixture : fixtures) {
 			
 //			try {
@@ -171,6 +171,7 @@ public class FixtureService extends GlobalService {
 //			if (body == null || body.isEmpty()) continue ;
 
 			JsonObject bodyObject = gson.fromJson(body, JsonObject.class);
+			if (bodyObject == null|| bodyObject.isJsonNull() || bodyObject.isEmpty()) continue;
 
 //			FileWriter writer = new FileWriter("./src/main/resources/data/players" + fixture.getId() + ".json");
 //			FileWriter idWriter = new FileWriter("./src/main/resources/data/fixture_ids.txt");
@@ -182,14 +183,18 @@ public class FixtureService extends GlobalService {
 //			idWriter.close();
 
 			var responseArray = bodyObject.getAsJsonArray("response");
+			if (responseArray.isJsonNull() || responseArray.isEmpty() || responseArray.size() == 0) continue;
 
 			for (var element : responseArray) {
 				var playersArray = element.getAsJsonObject().getAsJsonArray("players");
+				if (playersArray.isJsonNull() || playersArray.isEmpty() || playersArray.size() == 0) continue;
 				for (var playerElement : playersArray) {
 					var pArray = playerElement.getAsJsonObject().getAsJsonArray("players");
+					if (pArray.isJsonNull() || pArray.isEmpty() || pArray.size() == 0) continue;
 					for (var pElement : pArray) {
 						var player = getPlayer(pElement);
 						var statisticArray = pElement.getAsJsonObject().getAsJsonArray("statistics");
+						if (statisticArray.isJsonNull() || statisticArray.isEmpty() || statisticArray.size() == 0) continue;
 						for (var statElement : statisticArray) {
 							if (player == null)
 								break;
@@ -217,7 +222,7 @@ public class FixtureService extends GlobalService {
 							statistic.setShot(shot);
 							statistic.setFixture(fixture);
 							statistic.setPlayer(player);
-							fixture.getStatistic().add(statistic);
+							fixture.getStatistics().add(statistic);
 							player.getStatistics().add(statistic);
 
 						}

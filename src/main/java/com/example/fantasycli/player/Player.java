@@ -35,4 +35,8 @@ public class Player {
 	private Team team;
 	@OneToMany(mappedBy = "player", cascade = CascadeType.PERSIST)
 	private Set<Statistic> statistics = new HashSet<>();
+	
+	public void setStat(Statistic statistic) {
+		this.statistics.add(statistic);
+	}
 }
