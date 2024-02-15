@@ -1,7 +1,10 @@
 package com.example.fantasycli.fixture;
 
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -152,10 +155,20 @@ public class FixtureService extends GlobalService {
 		List<Fixture> fixtures = fixtureRepository.findAll();
 		var count = 1;
 		var limit = 9;
+		var total = fixtures.size();
 		for (var fixture : fixtures) {
+			
+//			try {
+//			Files.readString(Path.of("./src/main/resources/data/players" + fixture.getId() + ".json"));
+//			System.out.println("Exist");
+//			total--;
+//			continue;
+//			} catch (Exception e) {
+//				System.out.println("File does not exist. Continue!");
+//			}
 //			TimeUnit.SECONDS.sleep(5);
 			var body = apiRepository.getPlayerStatistic(fixture.getId());
-			if (body == null || body.isEmpty()) continue ;
+//			if (body == null || body.isEmpty()) continue ;
 
 			JsonObject bodyObject = gson.fromJson(body, JsonObject.class);
 
@@ -164,7 +177,7 @@ public class FixtureService extends GlobalService {
 //			var fixtureId = fixture.getId();
 //			
 //			writer.write(bodyObject.toString());
-//			idWriter.write(String.valueOf(fixtureId););
+//			idWriter.write(String.valueOf(fixtureId));
 //			writer.close();
 //			idWriter.close();
 
@@ -210,7 +223,21 @@ public class FixtureService extends GlobalService {
 						}
 					}
 				}
-			}	
+			}
+//			var progress = (double) count / total * 100;
+//			if (count == limit) {
+//				limit *= 2;
+//				logger.info("Progress: " + progress + "%");
+//				logger.info("Count: " + count);
+//				System.out.println("total: " + total);
+//				TimeUnit.SECONDS.sleep(65);
+//			}
+			
+//			
+//			logger.info("Progress: " + progress + "%");
+//			logger.info("Count: " + count);
+//			System.out.println("total: " + total);
+//			count++;
 		}
 	}
 
