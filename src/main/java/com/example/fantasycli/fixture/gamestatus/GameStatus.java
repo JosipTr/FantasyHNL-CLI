@@ -1,4 +1,4 @@
-package com.example.fantasycli.fixture;
+package com.example.fantasycli.fixture.gamestatus;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,9 +14,7 @@ public class GameStatus {
 	private String longStatus;
 	private String shortStatus;
 	private Integer elapsed;
-	@OneToOne
-	@MapsId
-	private Fixture fixture;
+
 	@Override
 	public String toString() {
 		return "GameStatus [id=" + id + ", longStatus=" + longStatus + ", shortStatus=" + shortStatus + ", elapsed="

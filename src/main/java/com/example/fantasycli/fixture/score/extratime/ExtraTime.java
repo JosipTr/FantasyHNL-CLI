@@ -1,24 +1,22 @@
-package com.example.fantasycli.fixture;
+package com.example.fantasycli.fixture.score.extratime;
 
 import jakarta.persistence.*;
-
 import lombok.*;
 
 @Entity
 @Getter
-@Setter 
+@Setter
 @EqualsAndHashCode
-public class PenaltyTime {
+@Table(name = "extra_times")
+public class ExtraTime {
 	@Id
 	private int id;
 	private Integer home;
 	private Integer away;
-	@OneToOne
-	@MapsId
-	private Score score;
+
 	@Override
 	public String toString() {
-		return "PenaltyTime [id=" + id + ", home=" + home + ", away=" + away + "]";
+		return "ExtraTime [id=" + id + ", home=" + home + ", away=" + away + "]";
 	}
 	
 	

@@ -1,4 +1,4 @@
-package com.example.fantasycli.fixture;
+package com.example.fantasycli.fixture.hometeam;
 
 import com.example.fantasycli.team.Team;
 
@@ -17,11 +17,8 @@ public class HomeTeam {
 	private int home_id;
 	private Boolean winner;
 	@ManyToOne
-	@JoinColumn(name = "team_id")
 	private Team team;
-	@OneToOne
-	@MapsId
-	private Fixture fixture;
+
 	@Override
 	public String toString() {
 		return "HomeTeam [home_id=" + home_id + ", winner=" + winner + ", team=" + team + "]";

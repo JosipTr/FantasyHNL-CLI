@@ -64,8 +64,9 @@ public class FootballApiRepositoryImpl implements ApiRepository {
 
 	@Override
 	public String getFixtures() {
-		// TODO Auto-generated method stub
-		return null;
+		var uri = "https://v3.football.api-sports.io/fixtures?league=210&season=2023";
+		var response = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
+		return response.getBody();
 	}
 
 	@Override

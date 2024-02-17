@@ -1,4 +1,4 @@
-package com.example.fantasycli.fixture;
+package com.example.fantasycli.fixture.score.halftime;
 
 import jakarta.persistence.*;
 
@@ -16,9 +16,6 @@ public class HalfTime {
 	private int id;
 	private Integer home;
 	private Integer away;
-	@OneToOne
-	@MapsId
-	private Score score;
 
 	@Override
 	public String toString() {

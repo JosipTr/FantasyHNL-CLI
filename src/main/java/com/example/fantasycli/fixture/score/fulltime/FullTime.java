@@ -1,4 +1,4 @@
-package com.example.fantasycli.fixture;
+package com.example.fantasycli.fixture.score.fulltime;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,9 +13,7 @@ public class FullTime {
 	private int id;
 	private Integer home;
 	private Integer away;
-	@OneToOne
-	@MapsId
-	private Score score;
+	
 	@Override
 	public String toString() {
 		return "FullTime [id=" + id + ", home=" + home + ", away=" + away + "]";

@@ -1,4 +1,9 @@
-package com.example.fantasycli.fixture;
+package com.example.fantasycli.fixture.score;
+
+import com.example.fantasycli.fixture.score.extratime.ExtraTime;
+import com.example.fantasycli.fixture.score.fulltime.FullTime;
+import com.example.fantasycli.fixture.score.halftime.HalfTime;
+import com.example.fantasycli.fixture.score.penaltytime.PenaltyTime;
 
 import jakarta.persistence.*;
 
@@ -11,17 +16,15 @@ import lombok.*;
 public class Score {
 	@Id
 	private int id;
-	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "score")
-	private HalfTime halfTime;
-	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "score")
-	private FullTime fullTime;
-	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "score")
-	private ExtraTime extraTime;
-	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "score")
-	private PenaltyTime penaltyTime;
 	@OneToOne
-	@MapsId
-	private Fixture fixture;
+	private HalfTime halfTime;
+	@OneToOne
+	private FullTime fullTime;
+	@OneToOne
+	private ExtraTime extraTime;
+	@OneToOne
+	private PenaltyTime penaltyTime;
+
 	@Override
 	public String toString() {
 		return "Score [id=" + id + ", halfTime=" + halfTime + ", fullTime=" + fullTime + ", extraTime=" + extraTime
