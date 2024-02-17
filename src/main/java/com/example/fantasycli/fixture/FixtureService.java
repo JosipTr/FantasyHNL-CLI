@@ -167,11 +167,19 @@ public class FixtureService extends GlobalService {
 		var status = super.getGson().fromJson(statusJson, GameStatus.class);
 		var longStatus = statusJson.get("long").getAsString();
 		var shortStatus = statusJson.get("short").getAsString();
-//		var elapsed = statusJson.get("elapsed").getAsInt();
+		var elapsedElement = statusJson.get("elapsed");
+
+		
 		status.setShortStatus(shortStatus);
 		status.setLongStatus(longStatus);
 		status.setId(id);
-//		status.setElapsed(elapsed);
+		if (elapsedElement.isJsonNull()) {
+			status.setElapsed(null);
+			var savedStatus = gameStatusRepository.save(status);
+			return savedStatus;
+		}
+		var elapsed = elapsedElement.getAsInt();
+		status.setElapsed(elapsed);
 		var savedStatus = gameStatusRepository.save(status);
 		return savedStatus;
 	}
