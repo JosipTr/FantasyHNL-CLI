@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.example.fantasycli.fixture.awayteam.AwayTeam;
+import com.example.fantasycli.fixture.event.Event;
 import com.example.fantasycli.fixture.fixturegoals.FixtureGoals;
 import com.example.fantasycli.fixture.gamestatus.GameStatus;
 import com.example.fantasycli.fixture.hometeam.HomeTeam;
@@ -38,6 +39,8 @@ public class Fixture {
 	private AwayTeam awayTeam;
 	@OneToOne
 	private Score score;
+	@OneToMany(mappedBy = "fixture", cascade = CascadeType.PERSIST)
+	private Set<Event> event = new HashSet<>();
 	@OneToMany(mappedBy = "fixture", cascade = {CascadeType.PERSIST})
 	private Set<Statistic> statistics = new HashSet<>();
 	

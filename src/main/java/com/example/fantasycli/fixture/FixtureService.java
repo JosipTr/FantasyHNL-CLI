@@ -5,7 +5,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.jline.utils.Timeout;
@@ -17,6 +20,10 @@ import org.springframework.shell.standard.ShellMethod;
 import com.example.fantasycli.GlobalService;
 import com.example.fantasycli.fixture.awayteam.AwayTeam;
 import com.example.fantasycli.fixture.awayteam.AwayTeamRepository;
+import com.example.fantasycli.fixture.event.Event;
+import com.example.fantasycli.fixture.event.EventRepository;
+import com.example.fantasycli.fixture.event.time.EventTime;
+import com.example.fantasycli.fixture.event.time.EventTimeRepository;
 import com.example.fantasycli.fixture.fixturegoals.FixtureGoals;
 import com.example.fantasycli.fixture.fixturegoals.FixtureGoalsRepository;
 import com.example.fantasycli.fixture.gamestatus.GameStatus;
@@ -71,12 +78,15 @@ public class FixtureService extends GlobalService {
 	private final HomeTeamRepository homeTeamRepository;
 	private final AwayTeamRepository awayTeamRepository;
 	private final FixtureGoalsRepository fixtureGoalsRepository;
+	private final EventTimeRepository eventTimeRepository;
+	private final EventRepository eventRepository;
 	private final Logger logger = LoggerFactory.getLogger(FixtureService.class);
 	
+	@ShellMethod(key = "hh")
 	public void getFixture(int fixtureId) {
 		var apiRepository = super.getApiRepository();
 		var gson = super.getGson();
-
+		
 		String body = apiRepository.getFixture(fixtureId);
 
 		JsonObject object = gson.fromJson(body, JsonObject.class);
@@ -85,9 +95,12 @@ public class FixtureService extends GlobalService {
 		for (var element : response) {
 
 			JsonObject fixtureJson = element.getAsJsonObject().getAsJsonObject("fixture");
+			var eventsArray = element.getAsJsonObject().getAsJsonArray("events");
+			
 
 			var fixture = gson.fromJson(fixtureJson, Fixture.class);
 
+			var events = getEvents(eventsArray, fixture.getId());
 			var venue = getVenue(fixtureJson);
 			var status = getStatus(fixtureJson, fixture.getId());
 			var homeTeam = getHomeTeam(element, fixture.getId());
@@ -95,6 +108,7 @@ public class FixtureService extends GlobalService {
 			var score = getScore(element, fixture.getId());
 			var fixtureGoals = getFixtureGoals(element, fixture.getId());
 			
+			fixture.setEvent(events);
 			fixture.setStatus(status);
 			fixture.setHomeTeam(homeTeam);
 			fixture.setAwayTeam(awayTeam);
@@ -414,6 +428,42 @@ public class FixtureService extends GlobalService {
 	private Penalty getPenalty(JsonObject statisticObject) {
 		JsonObject penaltyObject = statisticObject.getAsJsonObject("penalty");
 		return super.getGson().fromJson(penaltyObject, Penalty.class);
+	}
+	
+	public Set<Event> getEvents(JsonArray eventsArray, int id) {
+		var gson = super.getGson();
+		var eventSet = new HashSet<Event>();
+		for (var element : eventsArray) {
+			var eventJson = element.getAsJsonObject();
+			var event = gson.fromJson(eventJson, Event.class);
+			var timeJson = eventJson.getAsJsonObject("time");
+			var time = gson.fromJson(timeJson, EventTime.class);
+			time.setId(id);
+			var savedEventTime = eventTimeRepository.save(time);
+			
+			event.setTime(savedEventTime);
+			var teamIdElement = eventJson.getAsJsonObject("team").get("id");
+			var playerIdElement = eventJson.getAsJsonObject("player").get("id");
+			var assistPlayerIdElement = eventJson.getAsJsonObject("assist").get("id");
+			if (!teamIdElement.isJsonNull()) {
+				event.setTeam(teamRepository.getReferenceById(teamIdElement.getAsInt()));
+			} else {
+				event.setTeam(null);
+			}
+			if (!playerIdElement.isJsonNull()) {
+				event.setPlayer(playerRepository.getReferenceById(playerIdElement.getAsInt()));
+			} else {
+				event.setPlayer(null);
+			}
+			if (!assistPlayerIdElement.isJsonNull()) {
+				event.setAssist(playerRepository.getReferenceById(assistPlayerIdElement.getAsInt()));
+			} else {
+				event.setAssist(null);
+			}
+			var savedEvent = eventRepository.save(event);
+			eventSet.add(savedEvent);
+		}
+		return eventSet;
 	}
 
 	@ShellMethod(key = "get fixture")
