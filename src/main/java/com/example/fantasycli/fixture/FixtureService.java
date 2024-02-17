@@ -72,6 +72,41 @@ public class FixtureService extends GlobalService {
 	private final AwayTeamRepository awayTeamRepository;
 	private final FixtureGoalsRepository fixtureGoalsRepository;
 	private final Logger logger = LoggerFactory.getLogger(FixtureService.class);
+	
+	public void getFixture(int fixtureId) {
+		var apiRepository = super.getApiRepository();
+		var gson = super.getGson();
+
+		String body = apiRepository.getFixture(fixtureId);
+
+		JsonObject object = gson.fromJson(body, JsonObject.class);
+		JsonArray response = object.getAsJsonArray("response");
+
+		for (var element : response) {
+
+			JsonObject fixtureJson = element.getAsJsonObject().getAsJsonObject("fixture");
+
+			var fixture = gson.fromJson(fixtureJson, Fixture.class);
+
+			var venue = getVenue(fixtureJson);
+			var status = getStatus(fixtureJson, fixture.getId());
+			var homeTeam = getHomeTeam(element, fixture.getId());
+			var awayTeam = getAwayTeam(element, fixture.getId());
+			var score = getScore(element, fixture.getId());
+			var fixtureGoals = getFixtureGoals(element, fixture.getId());
+			
+			fixture.setStatus(status);
+			fixture.setHomeTeam(homeTeam);
+			fixture.setAwayTeam(awayTeam);
+			fixture.setScore(score);
+			fixture.setVenue(venue);
+			fixture.setFixtureGoals(fixtureGoals);
+			
+			var savedFixture = fixtureRepository.save(fixture);
+
+			logger.info(savedFixture.toString());
+		}
+	}
 
 	@ShellMethod(key = "save fixtures")
 	public void getFixtures() {
@@ -374,7 +409,7 @@ public class FixtureService extends GlobalService {
 	}
 
 	@ShellMethod(key = "get fixture")
-	public void getFixture() {
+	public void getFix() {
 		var fixture = fixtureRepository.getReferenceById(1034793);
 		System.out.println(fixture);
 	}

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 import org.springframework.stereotype.Repository;
 
-@Repository
+//@Repository
 public class FileApiRepositoryImpl implements ApiRepository {
 	public FileApiRepositoryImpl() {
 		super();
@@ -81,6 +81,17 @@ public class FileApiRepositoryImpl implements ApiRepository {
 
 	@Override
 	public String getPlayerStatistic(int fixtureId) {
+		try {
+			String body = Files.readString(Path.of("./src/main/resources/data/players" + fixtureId + ".json"));
+			return body;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public String getFixture(int fixtureId) {
 		try {
 			String body = Files.readString(Path.of("./src/main/resources/data/players" + fixtureId + ".json"));
 			return body;

@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-//@Repository
+@Repository
 public class FootballApiRepositoryImpl implements ApiRepository {
 
 	private final RestTemplate restTemplate;
@@ -58,6 +58,13 @@ public class FootballApiRepositoryImpl implements ApiRepository {
 	@Override
 	public String getTeamPlayers(int teamId) {
 		var uri = "https://v3.football.api-sports.io/players/squads?team=" + teamId;
+		var response = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
+		return response.getBody();
+	}
+	
+	@Override
+	public String getFixture(int fixtureId) {
+		var uri = "https://v3.football.api-sports.io/fixtures?id=" + fixtureId;
 		var response = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
 		return response.getBody();
 	}

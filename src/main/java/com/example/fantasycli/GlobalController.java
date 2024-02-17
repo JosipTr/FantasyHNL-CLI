@@ -2,6 +2,8 @@ package com.example.fantasycli;
 
 import java.io.IOException;
 
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
@@ -13,6 +15,7 @@ import com.example.fantasycli.team.TeamService;
 import com.example.fantasycli.venue.VenueService;
 
 @ShellComponent
+@EnableScheduling
 public class GlobalController {
 	private CountryService countryService;
 	private VenueService venueService;
@@ -43,4 +46,16 @@ public class GlobalController {
 		fixtureService.getFixtures();
 		fixtureService.getStatistic();
 	}
+	
+//	@Scheduled(cron = "0 0 * * * *")
+//	public void updateFixtures() {
+//		fixtureService.getFixtures();
+//	}
+	
+//	@ShellMethod(key = "dd")
+//	public void dd() {
+//		fixtureService.getFixture(1034683);
+//		
+//	}
+//	
 }

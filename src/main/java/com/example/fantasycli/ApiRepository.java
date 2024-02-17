@@ -11,6 +11,8 @@ public interface ApiRepository {
 	String getPlayers(int page);
 
 	String getTeamPlayers(int teamId);
+	
+	String getFixture(int fixtureId);
 
 	String getFixtures();
 
