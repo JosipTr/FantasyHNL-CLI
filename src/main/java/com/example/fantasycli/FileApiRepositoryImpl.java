@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 import org.springframework.stereotype.Repository;
 
-//@Repository
+@Repository
 public class FileApiRepositoryImpl implements ApiRepository {
 	public FileApiRepositoryImpl() {
 		super();
