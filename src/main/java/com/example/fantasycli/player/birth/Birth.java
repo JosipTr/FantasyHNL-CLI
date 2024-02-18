@@ -20,4 +20,10 @@ public class Birth {
 	@ManyToOne
 	@JoinColumn(name = "country_id")
 	private Country birth_country;
+	
+	public void setBirth(Birth birth) {
+		this.date = birth.getDate();
+		this.place = birth.getPlace();
+		this.birth_country = birth.getBirth_country();
+	}
 }

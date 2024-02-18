@@ -19,7 +19,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @ShellComponent
-@Transactional
 @AllArgsConstructor
 public class PlayerService extends GlobalService {
 	private final PlayerRepository playerRepository;
@@ -28,6 +27,7 @@ public class PlayerService extends GlobalService {
 	private final Logger logger = LoggerFactory.getLogger(PlayerService.class);
 
 	@ShellMethod(key = "save players")
+	@Transactional
 	public void getTeamPlayers() throws InterruptedException, IOException {
 		var apiRepository = super.getApiRepository();
 		var gson = super.getGson();
@@ -50,8 +50,9 @@ public class PlayerService extends GlobalService {
 				var playerObject = element.getAsJsonObject();
 				var player = gson.fromJson(playerObject, Player.class);
 				player.setTeam(team);
-				var savedPlayer = playerRepository.save(player);
-				logger.info(savedPlayer.toString());
+				var pla = playerRepository.findById(player.getId());
+				
+				pla.ifPresentOrElse(p -> p.setPlayer(player), () -> playerRepository.save(player));
 			}
 //			 writer.close();
 			count++;
@@ -112,8 +113,10 @@ public class PlayerService extends GlobalService {
 					player.setName(playerNew.getName());
 					player.setNationality(playerNew.getNationality());
 					player.setWeight(playerNew.getWeight());
-					player.setBirth(birth);
-					playerRepository.save(player);
+					
+					var pla = playerRepository.findById(player.getId());
+					if (!pla.isPresent()) player.setBirth(birth);
+					pla.ifPresentOrElse(p -> p.setPlayer(player), () -> playerRepository.save(player));
 					break;
 				}
 			}

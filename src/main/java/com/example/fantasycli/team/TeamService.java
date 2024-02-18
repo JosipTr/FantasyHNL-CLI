@@ -15,7 +15,6 @@ import com.google.gson.JsonObject;
 import jakarta.transaction.Transactional;
 
 @ShellComponent
-@Transactional
 public class TeamService extends GlobalService{
 	private final TeamRepository teamRepository;
 	private final LeagueRepository leagueRepository;
@@ -31,6 +30,7 @@ public class TeamService extends GlobalService{
 	}
 
 	@ShellMethod(key = "save teams")
+	@Transactional
 	public void getTeams() {
 		var apiRepository = super.getApiRepository();
 		var gson = super.getGson();
@@ -47,17 +47,16 @@ public class TeamService extends GlobalService{
 			Team team = gson.fromJson(teamJson, Team.class);
 			int venueId = element.getAsJsonObject().get("venue").getAsJsonObject().get("id").getAsInt();
 			Venue venue = venueRepository.getReferenceById(venueId);
-			
+			var tea = teamRepository.findById(team.getId());
 			team.setLeague(league);
 			team.setVenue(venue);
 
-			var savedTeam = teamRepository.save(team);
-			logger.info(savedTeam.toString());
+			tea.ifPresentOrElse(t -> t.setTeam(team), () -> teamRepository.save(team));
 		}
-		return;
 	}
 	
 	@ShellMethod(key = "get team")
+	@Transactional
 	public void getTea() {
 		var g = teamRepository.getReferenceById(620);
 		System.out.println(g.toString());

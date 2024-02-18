@@ -24,4 +24,13 @@ public class Team {
 	private League league;
 	@ManyToOne
 	private Venue venue;
+	
+	public void setTeam(Team team) {
+		this.name = team.getName();
+		this.code = team.getCode();
+		this.founded = team.getFounded();
+		this.logo = team.getLogo();
+		this.league = team.getLeague();
+		this.venue = team.getVenue();
+	}
 }

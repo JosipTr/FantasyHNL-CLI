@@ -39,4 +39,21 @@ public class Player {
 	public void setStat(Statistic statistic) {
 		this.statistics.add(statistic);
 	}
+	
+	public void setPlayer(Player player) {
+		this.name = player.getName();
+		this.age = player.getAge();
+		this.number = player.getNumber();
+		this.position = player.getPosition();
+		this.firstname = player.getFirstname();
+		this.lastname = player.getLastname();
+		this.nationality = player.getNationality();
+		this.height = player.getHeight();
+		this.weight = player.getWeight();
+		this.injured = player.getInjured();
+		this.photo = player.getPhoto();
+		this.birth = player.getBirth();
+		this.team = player.getTeam();
+		this.statistics = player.getStatistics();
+	}
 }
