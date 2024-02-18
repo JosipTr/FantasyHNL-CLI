@@ -267,7 +267,7 @@ public class FixtureService extends GlobalService {
 							statistic.setShot(shot);
 							statistic.setFixture(fixture);
 							statistic.setPlayer(player);
-							fixture.getStatistics().add(statistic);
+//							fixture.getStatistics().add(statistic);
 							player.getStatistics().add(statistic);
 
 						}
@@ -366,8 +366,15 @@ public class FixtureService extends GlobalService {
 	}
 
 	@ShellMethod(key = "get fixture")
+	
 	public void getFixture() {
-		var fixture = fixtureRepository.getReferenceById(1034834);
-		System.out.println(fixture);
+		var gson = new Gson();
+		var fixture = fixtureRepository.findById(1034680);
+		if (!fixture.isPresent()) System.out.println(fixture.get());
+		else {
+			var fixtureJson = gson.toJson(fixture.get());
+			System.out.println(fixtureJson);
+		}
+		
 	}
 }
