@@ -39,6 +39,5 @@ public class VenueService extends GlobalService {
 			ven.ifPresentOrElse(t -> t.setVenue(venue), () -> venueRepository.save(venue));
 
 		}
-		return;
 	}
 }

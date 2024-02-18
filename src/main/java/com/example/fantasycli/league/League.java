@@ -19,4 +19,11 @@ public class League {
 	private String logo;
 	@ManyToOne
 	private Country country;
+	
+	public void setLeague(League league) {
+		this.name = league.getName();
+		this.type = league.getType();
+		this.logo = league.getLogo();
+		this.country = league.getCountry();
+	}
 }

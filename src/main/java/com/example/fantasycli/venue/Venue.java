@@ -21,10 +21,10 @@ public class Venue {
 	private String image;
 	
 	public void setVenue(Venue venue) {
-		this.name = venue.name;
-		this.city = venue.city;
-		this.capacity = venue.capacity;
-		this.image = venue.image;
-		this.address = venue.address;
+		this.name = venue.getName();
+		this.city = venue.getCity();
+		this.capacity = venue.getCapacity();
+		this.image = venue.getImage();
+		this.address = venue.getAddress();
 	}
 }

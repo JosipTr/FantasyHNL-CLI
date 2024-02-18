@@ -10,6 +10,7 @@ import com.example.fantasycli.GlobalService;
 import com.example.fantasycli.country.CountryRepository;
 import com.google.gson.JsonObject;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @ShellComponent
@@ -21,6 +22,7 @@ public class LeagueService extends GlobalService{
 
 
 @ShellMethod(key = "save leagues")
+@Transactional
 	public void saveLeagues() {
 		var apiRepository = super.getApiRepository();
 		var gson = super.getGson();
@@ -37,9 +39,9 @@ public class LeagueService extends GlobalService{
 			var country = countryRepository.getCountryByName(countryName);
 			League league = gson.fromJson(leagueJson, League.class);
 			league.setCountry(country);
-			var savedLeague = leagueRepository.save(league);
-			logger.info(savedLeague.toString());
+			var leg = leagueRepository.findById(league.getId());
+			
+			leg.ifPresentOrElse(l -> l.setLeague(league), () -> leagueRepository.save(league));
 		}
-		return;
 	}
 }
