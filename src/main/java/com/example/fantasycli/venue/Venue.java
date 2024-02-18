@@ -19,4 +19,12 @@ public class Venue {
 	@Column(unique = true)
 	private String address;
 	private String image;
+	
+	public void setVenue(Venue venue) {
+		this.name = venue.name;
+		this.city = venue.city;
+		this.capacity = venue.capacity;
+		this.image = venue.image;
+		this.address = venue.address;
+	}
 }
