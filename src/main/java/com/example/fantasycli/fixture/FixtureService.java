@@ -5,7 +5,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.jline.utils.Timeout;
@@ -16,6 +19,8 @@ import org.springframework.shell.standard.ShellMethod;
 
 import com.example.fantasycli.GlobalService;
 import com.example.fantasycli.fixture.awayteam.AwayTeam;
+import com.example.fantasycli.fixture.event.Event;
+import com.example.fantasycli.fixture.event.time.EventTime;
 import com.example.fantasycli.fixture.gamestatus.GameStatus;
 import com.example.fantasycli.fixture.hometeam.HomeTeam;
 import com.example.fantasycli.fixture.score.Score;
@@ -24,6 +29,7 @@ import com.example.fantasycli.fixture.score.fulltime.FullTime;
 import com.example.fantasycli.fixture.score.halftime.HalfTime;
 import com.example.fantasycli.fixture.score.penaltytime.PenaltyTime;
 import com.example.fantasycli.fixture.statistic.Statistic;
+import com.example.fantasycli.fixture.statistic.StatisticRepository;
 import com.example.fantasycli.fixture.statistic.card.Card;
 import com.example.fantasycli.fixture.statistic.dribble.Dribble;
 import com.example.fantasycli.fixture.statistic.duel.Duel;
@@ -52,8 +58,84 @@ public class FixtureService extends GlobalService {
 	private final VenueRepository venueRepository;
 	private final TeamRepository teamRepository;
 	private final PlayerRepository playerRepository;
+	private final StatisticRepository statisticRepository;
 	private final Logger logger = LoggerFactory.getLogger(FixtureService.class);
 
+	
+	@ShellMethod(key = "hh")
+	public void getFixture(int fixtureId) throws InterruptedException {
+		var apiRepository = super.getApiRepository();
+		var gson = super.getGson();
+
+
+		String body = apiRepository.getFixture(fixtureId);
+
+		JsonObject object = gson.fromJson(body, JsonObject.class);
+		JsonArray response = object.getAsJsonArray("response");
+
+		for (var element : response) {
+
+			JsonObject fixtureJson = element.getAsJsonObject().getAsJsonObject("fixture");
+			JsonArray playersArray = element.getAsJsonObject().getAsJsonArray("players");
+
+			var fixture = gson.fromJson(fixtureJson, Fixture.class);
+
+			var venue = getVenue(fixtureJson);
+			var status = getStatus(fixtureJson);
+			var homeTeam = getHomeTeam(element);
+			var awayTeam = getAwayTeam(element);
+			var score = getScore(element, fixture);
+			var statistics = getStatistics(playersArray, fixture);
+			status.setFixture(fixture);
+			homeTeam.setFixture(fixture);
+			awayTeam.setFixture(fixture);
+			score.setFixture(fixture);
+
+			fixture.setVenue(venue);
+
+			var fix = fixtureRepository.findById(fixture.getId());
+			
+			if (fix.isPresent()) {
+				var fixScore = fix.get().getScore();
+				var et = fixScore.getExtraTime().setExtraTime(score.getExtraTime());
+				var ft = fixScore.getFullTime().setFullTime(score.getFullTime());
+				var ht = fixScore.getHalfTime().setHalfTime(score.getHalfTime());
+				var pt = fixScore.getPenaltyTime().setPenaltyTime(score.getPenaltyTime());
+				fixScore.setExtraTime(et);
+				fixScore.setFullTime(ft);
+				fixScore.setPenaltyTime(pt);
+				fixScore.setHalfTime(ht);
+				
+				var at = fix.get().getAwayTeam().setAwayTeam(awayTeam);
+				var homeT = fix.get().getHomeTeam().setHomeTeam(homeTeam);
+				var sts = fix.get().getStatus().setGameStatus(status);
+				
+				fix.get().setAwayTeam(at);
+				fix.get().setStatus(sts);
+				fix.get().setHomeTeam(homeT);
+				fix.get().setScore(fixScore);
+				fix.get().setFixture(fixture);
+//				fix.get().setStatistics(statistics);
+
+				logger.info(fix.toString());
+			} else {
+				System.out.println("tu");
+				TimeUnit.SECONDS.sleep(5);
+				var savedFixture = fixtureRepository.save(fixture);
+
+				savedFixture.setStatus(status);
+				savedFixture.setHomeTeam(homeTeam);
+				savedFixture.setAwayTeam(awayTeam);
+				savedFixture.setScore(score);
+				savedFixture.setStatistics(statistics);
+
+				logger.info(savedFixture.toString());
+			}
+
+		}
+	}
+	
+	
 	@ShellMethod(key = "save fixtures")
 	public void getFixtures() {
 		var apiRepository = super.getApiRepository();
@@ -188,7 +270,7 @@ public class FixtureService extends GlobalService {
 	}
 
 	@ShellMethod(key = "get statistics")
-	public void getStatistic() throws IOException, InterruptedException {
+	public void getStat() throws IOException, InterruptedException {
 		var apiRepository = super.getApiRepository();
 		var gson = super.getGson();
 
@@ -364,16 +446,179 @@ public class FixtureService extends GlobalService {
 		JsonObject penaltyObject = statisticObject.getAsJsonObject("penalty");
 		return super.getGson().fromJson(penaltyObject, Penalty.class);
 	}
-
-	@ShellMethod(key = "get fixture")
 	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	public Set<Statistic> getStatistics(JsonArray firstPlayerArray, Fixture fixture) {
+		var gson = super.getGson();
+		var statisticSet = new HashSet<Statistic>();
+		if (firstPlayerArray.isJsonNull() || firstPlayerArray.isEmpty())
+			return statisticSet;
+		
+		for (var firstPlayerElement : firstPlayerArray) {
+			var playersArray = firstPlayerElement.getAsJsonObject().getAsJsonArray("players");
+			if (playersArray.isJsonNull() || playersArray.isEmpty()) return statisticSet;
+			for (var element : playersArray) {
+				var player = getPlayer(element);
+				if (player == null) continue;
+				var statisticArray = element.getAsJsonObject().getAsJsonArray("statistics");
+				
+				for (var statisticElement : statisticArray) {
+					var statisticObject = statisticElement.getAsJsonObject();
+					
+					var statistic = gson.fromJson(statisticObject, Statistic.class);
+					var game = getGame(statisticObject);
+					var shot = getShot(statisticObject);
+					var goal = getGoal(statisticObject);
+					var pass = getPass(statisticObject);
+					var tackle = getTackle(statisticObject);
+					var dribble = getDribble(statisticObject);
+					var penalty = getPenalty(statisticObject);
+					var card = getCard(statisticObject);
+					var foul = getFoul(statisticObject);
+					var duel = getDuel(statisticObject);
+
+					statistic.setTackle(tackle);
+					statistic.setDribble(dribble);
+					statistic.setPenalty(penalty);
+					statistic.setCard(card);
+					statistic.setFoul(foul);
+					statistic.setDuel(duel);
+					statistic.setPass(pass);
+					statistic.setGoal(goal);
+					statistic.setGame(game);
+					statistic.setShot(shot);
+					statistic.setFixture(fixture);
+					statistic.setPlayer(player);
+
+					statisticSet.add(statistic);
+//					fixture.getStatistics().add(savedStatistic);
+//					player.getStatistics().add(savedStatistic);
+				}
+			}
+		}
+		return statisticSet;
+	}
+
+	//////////////////////////////////////////////////////////////
+	
+	public Set<Event> getEvents(JsonArray eventsArray, Fixture fixture) {
+		var gson = super.getGson();
+		var eventSet = new HashSet<Event>();
+		for (var element : eventsArray) {
+			var eventJson = element.getAsJsonObject();
+			var event = gson.fromJson(eventJson, Event.class);
+			var timeJson = eventJson.getAsJsonObject("time");
+			var time = gson.fromJson(timeJson, EventTime.class);
+			System.out.println(event);
+			System.out.println(time);
+			time.setFixture(fixture);
+			time.setId(fixture.getId());
+
+//			event.setTime(savedEventTime);
+			var teamIdElement = eventJson.getAsJsonObject("team").get("id");
+			var playerIdElement = eventJson.getAsJsonObject("player").get("id");
+			var assistPlayerIdElement = eventJson.getAsJsonObject("assist").get("id");
+			if (!teamIdElement.isJsonNull()) {
+				var teamOptional = teamRepository.findById(teamIdElement.getAsInt());
+				if (teamOptional.isEmpty())
+					event.setTeam(null);
+				else
+					event.setTeam(teamOptional.get());
+
+			} else {
+				event.setTeam(null);
+			}
+			if (!playerIdElement.isJsonNull()) {
+				var playerOptional = playerRepository.findById(playerIdElement.getAsInt());
+				if (playerOptional.isEmpty())
+					event.setPlayer(null);
+				else
+					event.setPlayer(playerOptional.get());
+			} else {
+				event.setPlayer(null);
+			}
+			if (!assistPlayerIdElement.isJsonNull()) {
+				var assistPlayerOptional = playerRepository.findById(assistPlayerIdElement.getAsInt());
+				if (assistPlayerOptional.isEmpty())
+					event.setAssist(null);
+				else
+					event.setAssist(assistPlayerOptional.get());
+			} else {
+				event.setAssist(null);
+			}
+			event.setFixture(fixture);
+			event.setId(fixture.getId());
+
+			eventSet.add(event);
+		}
+		return eventSet;
+	}
+	
+	public void updateStatistic(JsonArray firstPlayerArray, Fixture fixture) {
+		var gson = super.getGson();
+		var statisticSet = new HashSet<Statistic>();
+		fixture.setStatistics(statisticSet);
+		if (firstPlayerArray.isJsonNull() || firstPlayerArray.isEmpty())
+			return;
+		
+		for (var firstPlayerElement : firstPlayerArray) {
+			var playersArray = firstPlayerElement.getAsJsonObject().getAsJsonArray("players");
+			if (playersArray.isJsonNull() || playersArray.isEmpty()) return;
+			for (var element : playersArray) {
+				var player = getPlayer(element);
+				if (player == null) continue;
+				var statisticArray = element.getAsJsonObject().getAsJsonArray("statistics");
+				
+				for (var statisticElement : statisticArray) {
+					var statisticObject = statisticElement.getAsJsonObject();
+					
+					var statistic = gson.fromJson(statisticObject, Statistic.class);
+					var game = getGame(statisticObject);
+					var shot = getShot(statisticObject);
+					var goal = getGoal(statisticObject);
+					var pass = getPass(statisticObject);
+					var tackle = getTackle(statisticObject);
+					var dribble = getDribble(statisticObject);
+					var penalty = getPenalty(statisticObject);
+					var card = getCard(statisticObject);
+					var foul = getFoul(statisticObject);
+					var duel = getDuel(statisticObject);
+
+					statistic.setTackle(tackle);
+					statistic.setDribble(dribble);
+					statistic.setPenalty(penalty);
+					statistic.setCard(card);
+					statistic.setFoul(foul);
+					statistic.setDuel(duel);
+					statistic.setPass(pass);
+					statistic.setGoal(goal);
+					statistic.setGame(game);
+					statistic.setShot(shot);
+					statistic.setFixture(fixture);
+					statistic.setPlayer(player);
+
+					statisticSet.add(statistic);
+//					fixture.getStatistics().add(savedStatistic);
+//					player.getStatistics().add(savedStatistic);
+				}
+			}
+		}
+		fixture.setStatistics(statisticSet);
+	}
+	
+	
+	@ShellMethod(key = "get fixture")
 	public void getFixture() {
 		var gson = new Gson();
 		var fixture = fixtureRepository.findById(1034680);
 		if (!fixture.isPresent()) System.out.println(fixture.get());
 		else {
-			var fixtureJson = gson.toJson(fixture.get());
-			System.out.println(fixtureJson);
+//			var fixtureJson = gson.toJson(fixture.get());
+//			System.out.println(fixtureJson);
+			System.out.println(fixture.get());
 		}
 		
 	}
