@@ -27,25 +27,31 @@ public class Fixture {
 	private String timezone;
 	private String date;
 	private Integer timestamp;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private FixtureGoals fixtureGoals;
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	private Venue venue;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private GameStatus status;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private HomeTeam homeTeam;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private AwayTeam awayTeam;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private Score score;
 	@OneToMany(mappedBy = "fixture", cascade = CascadeType.PERSIST)
 	private Set<Event> event = new HashSet<>();
-	@OneToMany(mappedBy = "fixture", cascade = {CascadeType.PERSIST})
+	@OneToMany(mappedBy = "fixture", cascade = { CascadeType.PERSIST })
 	private Set<Statistic> statistics = new HashSet<>();
-	
-	
+
 	public void setStat(Statistic statistic) {
 		this.statistics.add(statistic);
 	}
+
+	public void setFixture(Fixture fixture) {
+		this.referee = fixture.getReferee();
+		this.timezone = fixture.getTimezone();
+		this.date = fixture.getDate();
+		this.timestamp = fixture.getTimestamp();
 	}
+}

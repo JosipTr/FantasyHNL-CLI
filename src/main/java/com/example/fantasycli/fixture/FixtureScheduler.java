@@ -67,7 +67,7 @@ public class FixtureScheduler implements SchedulingConfigurer {
 
 	public void updateLiveFixture(int fixtureId) throws InterruptedException {
 		counter++;
-		service.getFixture(fixtureId);
+//		service.getFixture(fixtureId);
 	}
 
 	public void stop(ScheduledTaskRegistrar taskRegistrar) {
