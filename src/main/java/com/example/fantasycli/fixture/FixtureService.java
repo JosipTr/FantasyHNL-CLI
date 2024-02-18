@@ -16,6 +16,7 @@ import org.slf4j.*;
 
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.example.fantasycli.GlobalService;
 import com.example.fantasycli.fixture.awayteam.AwayTeam;
@@ -62,8 +63,9 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @ShellComponent
-@Transactional
 @AllArgsConstructor
+@EnableTransactionManagement
+@Transactional
 public class FixtureService extends GlobalService {
 	private final FixtureRepository fixtureRepository;
 	private final VenueRepository venueRepository;
@@ -83,7 +85,7 @@ public class FixtureService extends GlobalService {
 	private final Logger logger = LoggerFactory.getLogger(FixtureService.class);
 	
 	@ShellMethod(key = "hh")
-	public void getFixture(int fixtureId) {
+	public void getFixture(int fixtureId) throws InterruptedException {
 		var apiRepository = super.getApiRepository();
 		var gson = super.getGson();
 		
@@ -99,8 +101,8 @@ public class FixtureService extends GlobalService {
 			
 
 			var fixture = gson.fromJson(fixtureJson, Fixture.class);
-
-			var events = getEvents(eventsArray, fixture.getId());
+			var events = getEvents(eventsArray, fixture);
+//			var events = getEvents(eventsArray, fixture.getId());
 			var venue = getVenue(fixtureJson);
 			var status = getStatus(fixtureJson, fixture.getId());
 			var homeTeam = getHomeTeam(element, fixture.getId());
@@ -430,37 +432,51 @@ public class FixtureService extends GlobalService {
 		return super.getGson().fromJson(penaltyObject, Penalty.class);
 	}
 	
-	public Set<Event> getEvents(JsonArray eventsArray, int id) {
+	public Set<Event> getEvents(JsonArray eventsArray, Fixture fixture) {
 		var gson = super.getGson();
+		eventRepository.deleteAllByFixtureId(fixture.getId());
+		eventTimeRepository.deleteAllByFixtureId(fixture.getId());
 		var eventSet = new HashSet<Event>();
 		for (var element : eventsArray) {
 			var eventJson = element.getAsJsonObject();
 			var event = gson.fromJson(eventJson, Event.class);
 			var timeJson = eventJson.getAsJsonObject("time");
 			var time = gson.fromJson(timeJson, EventTime.class);
-			time.setId(id);
+			System.out.println(event);
+			System.out.println(time);
+			time.setFixture(fixture);
 			var savedEventTime = eventTimeRepository.save(time);
-			
+
 			event.setTime(savedEventTime);
 			var teamIdElement = eventJson.getAsJsonObject("team").get("id");
 			var playerIdElement = eventJson.getAsJsonObject("player").get("id");
 			var assistPlayerIdElement = eventJson.getAsJsonObject("assist").get("id");
 			if (!teamIdElement.isJsonNull()) {
-				event.setTeam(teamRepository.getReferenceById(teamIdElement.getAsInt()));
+				var teamOptional = teamRepository.findById(teamIdElement.getAsInt());
+				if (teamOptional.isEmpty()) event.setTeam(null);
+				else event.setTeam(teamOptional.get());
+				
 			} else {
 				event.setTeam(null);
 			}
 			if (!playerIdElement.isJsonNull()) {
-				event.setPlayer(playerRepository.getReferenceById(playerIdElement.getAsInt()));
+				var playerOptional = playerRepository.findById(playerIdElement.getAsInt());
+				if (playerOptional.isEmpty()) event.setPlayer(null);
+				else event.setPlayer(playerOptional.get());
 			} else {
 				event.setPlayer(null);
 			}
 			if (!assistPlayerIdElement.isJsonNull()) {
-				event.setAssist(playerRepository.getReferenceById(assistPlayerIdElement.getAsInt()));
+				var assistPlayerOptional = playerRepository.findById(assistPlayerIdElement.getAsInt());
+				if (assistPlayerOptional.isEmpty()) event.setAssist(null);
+				else event.setAssist(assistPlayerOptional.get());
 			} else {
 				event.setAssist(null);
 			}
+			event.setFixture(fixture);
 			var savedEvent = eventRepository.save(event);
+			System.out.println(savedEvent);
+
 			eventSet.add(savedEvent);
 		}
 		return eventSet;

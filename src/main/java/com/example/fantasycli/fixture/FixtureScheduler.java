@@ -65,7 +65,7 @@ public class FixtureScheduler implements SchedulingConfigurer {
 		return;
 	}
 
-	public void updateLiveFixture(int fixtureId) {
+	public void updateLiveFixture(int fixtureId) throws InterruptedException {
 		counter++;
 		service.getFixture(fixtureId);
 	}
@@ -97,8 +97,22 @@ public class FixtureScheduler implements SchedulingConfigurer {
 					.append(" ").append(month).append(" ").append("*").toString();
 
 			var n = getHalfTime(fixtureDate);
-			taskMap.put(() -> updateLiveFixture(fixture.getId()), s);
-			taskMapNew.put(() -> updateLiveFixture(fixture.getId()), n);
+			taskMap.put(() -> {
+				try {
+					updateLiveFixture(fixture.getId());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}, s);
+			taskMapNew.put(() -> {
+				try {
+					updateLiveFixture(fixture.getId());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}, n);
 			System.out.println(s);
 			builder.setLength(0);
 		}

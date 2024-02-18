@@ -13,18 +13,26 @@ import lombok.*;
 @Setter
 public class Event {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@OneToOne
 	private EventTime time;
-	@OneToOne
+	@ManyToOne
 	private Team team;
-	@OneToOne
+	@ManyToOne
 	private Player player;
-	@OneToOne
+	@ManyToOne
 	private Player assist;
 	private String type;
 	private String detail;
-	private String comment;
+	private String comments;
 	@ManyToOne
 	private Fixture fixture;
+	@Override
+	public String toString() {
+		return "Event [id=" + id + ", assist=" + assist + ", type=" + type + ", detail=" + detail + ", comment="
+				+ comments + "]";
+	}
+	
+	
 }

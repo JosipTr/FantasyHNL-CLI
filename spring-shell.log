@@ -129,3 +129,15 @@
 1708184255214:da
 1708185417433:dd
 1708198030871:save fixtures
+1708238101485:hh
+1708238202876:hh --fixtureId 1034682
+1708238673096:TimeUnit.SECONDS.sleep(5);
+1708238696437:hh --fixtureId 1034682
+1708241800642:stacktrace
+1708241925727:hh --fixtureId 1034682
+1708242009064:hh --fixtureId [31mJDBC exception executing SQL [DELETE FROM event where fixture_id = ?] [No results were returned by the query.] [n/a][0m
+1708242025393:hh --fixtureId 1034682
+1708242035048:1034682
+1708242043670:hh --fixtureId 1034682
+1708242423765:1034682
+1708242429661:hh --fixtureId 1034682
