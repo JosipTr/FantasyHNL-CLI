@@ -1,4 +1,7 @@
-package com.example.fantasycli.fixture.statistic;
+package com.example.fantasycli.fixture.statistic.game;
+
+import com.example.fantasycli.fixture.statistic.Statistic;
+import com.example.fantasycli.fixture.statistic.StatisticId;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;

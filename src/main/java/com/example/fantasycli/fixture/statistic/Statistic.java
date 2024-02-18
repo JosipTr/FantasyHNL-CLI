@@ -1,6 +1,16 @@
 package com.example.fantasycli.fixture.statistic;
 
 import com.example.fantasycli.fixture.Fixture;
+import com.example.fantasycli.fixture.statistic.card.Card;
+import com.example.fantasycli.fixture.statistic.dribble.Dribble;
+import com.example.fantasycli.fixture.statistic.duel.Duel;
+import com.example.fantasycli.fixture.statistic.foul.Foul;
+import com.example.fantasycli.fixture.statistic.game.Game;
+import com.example.fantasycli.fixture.statistic.goal.Goal;
+import com.example.fantasycli.fixture.statistic.pass.Pass;
+import com.example.fantasycli.fixture.statistic.penalty.Penalty;
+import com.example.fantasycli.fixture.statistic.shot.Shot;
+import com.example.fantasycli.fixture.statistic.tackle.Tackle;
 import com.example.fantasycli.player.Player;
 
 import jakarta.persistence.*;
