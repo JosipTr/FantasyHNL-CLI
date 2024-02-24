@@ -1,6 +1,7 @@
 package com.example.fantasycli.fixture;
 
 import java.io.FileReader;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,7 +30,6 @@ import com.example.fantasycli.fixture.score.fulltime.FullTime;
 import com.example.fantasycli.fixture.score.halftime.HalfTime;
 import com.example.fantasycli.fixture.score.penaltytime.PenaltyTime;
 import com.example.fantasycli.fixture.statistic.Statistic;
-import com.example.fantasycli.fixture.statistic.StatisticRepository;
 import com.example.fantasycli.fixture.statistic.StatisticService;
 import com.example.fantasycli.fixture.statistic.card.Card;
 import com.example.fantasycli.fixture.statistic.dribble.Dribble;
@@ -86,7 +86,6 @@ public class FixtureService extends GlobalService {
 			var homeTeam = getHomeTeam(element);
 			var awayTeam = getAwayTeam(element);
 			var score = getScore(element, fixture);
-//			var statistics = getStatistics(playersArray, fixture);
 			status.setFixture(fixture);
 			homeTeam.setFixture(fixture);
 			awayTeam.setFixture(fixture);
@@ -118,20 +117,16 @@ public class FixtureService extends GlobalService {
 				fix.get().setFixture(fixture);
 				statisticService.updateStatistics(playersArray, fix.get());
 				statisticService.getStatistics(playersArray, fix.get());
-				
-//				fix.get().setStatistics(d);
 
 				logger.info(fix.toString());
 			} else {
-				System.out.println("tu sam");
-				TimeUnit.SECONDS.sleep(5);
 				var savedFixture = fixtureRepository.save(fixture);
 
 				savedFixture.setStatus(status);
 				savedFixture.setHomeTeam(homeTeam);
 				savedFixture.setAwayTeam(awayTeam);
 				savedFixture.setScore(score);
-//				savedFixture.setStatistics(statistics);
+				statisticService.getStatistics(playersArray, fix.get());
 
 				logger.info(savedFixture.toString());
 			}

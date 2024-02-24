@@ -67,7 +67,8 @@ public class FixtureScheduler implements SchedulingConfigurer {
 
 	public void updateLiveFixture(int fixtureId) throws InterruptedException {
 		counter++;
-//		service.getFixture(fixtureId);
+		service.getFixture(fixtureId);
+		System.out.println("da da");
 	}
 
 	public void stop(ScheduledTaskRegistrar taskRegistrar) {
@@ -93,7 +94,7 @@ public class FixtureScheduler implements SchedulingConfigurer {
 			var month = fixtureDate.getMonthValue();
 			var minute = fixtureDate.getMinute();
 			var hour = fixtureDate.getHour();
-			var s = builder.append(0).append(" ").append(minute + "/2").append(" ").append(hour).append(" ").append(day)
+			var s = builder.append(0).append(" ").append(minute + "/5").append(" ").append(hour).append(" ").append(day)
 					.append(" ").append(month).append(" ").append("*").toString();
 
 			var n = getHalfTime(fixtureDate);

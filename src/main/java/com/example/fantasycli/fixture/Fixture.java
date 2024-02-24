@@ -1,6 +1,7 @@
 package com.example.fantasycli.fixture;
 
 import java.util.Collection;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -13,7 +14,6 @@ import com.example.fantasycli.fixture.gamestatus.GameStatus;
 import com.example.fantasycli.fixture.hometeam.HomeTeam;
 import com.example.fantasycli.fixture.score.Score;
 import com.example.fantasycli.fixture.statistic.Statistic;
-import com.example.fantasycli.test.Item;
 import com.example.fantasycli.venue.Venue;
 
 import jakarta.persistence.*;

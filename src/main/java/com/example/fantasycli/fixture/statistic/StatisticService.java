@@ -30,19 +30,17 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class StatisticService extends GlobalService{
-	private final StatisticRepository statisticRepository;
 	private final PlayerRepository playerRepository;
 	private final EntityManager entityManager;
 
-	public Set<Statistic> getStatistics(JsonArray firstPlayerArray, Fixture fixture) {
+	public void getStatistics(JsonArray firstPlayerArray, Fixture fixture) {
 		var gson = super.getGson();
-		var statisticSet = new HashSet<Statistic>();
 		if (firstPlayerArray.isJsonNull() || firstPlayerArray.isEmpty())
-			return statisticSet;
+			return;
 		
 		for (var firstPlayerElement : firstPlayerArray) {
 			var playersArray = firstPlayerElement.getAsJsonObject().getAsJsonArray("players");
-			if (playersArray.isJsonNull() || playersArray.isEmpty()) return statisticSet;
+			if (playersArray.isJsonNull() || playersArray.isEmpty()) return;
 			for (var element : playersArray) {
 				var player = getPlayer(element);
 				if (player == null) continue;
@@ -73,30 +71,16 @@ public class StatisticService extends GlobalService{
 					statistic.setGoal(goal);
 					statistic.setGame(game);
 					statistic.setShot(shot);
-//					statistic.setFixture(fixture);
-//					statistic.setPlayer(player);
 
-					statisticSet.add(statistic);
 					fixture.addStatistic(statistic);
 					player.addStatistic(statistic);
-					System.out.println("tu");
-					try {
-						TimeUnit.SECONDS.sleep(2);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-//					fixture.getStatistics().add(savedStatistic);
-//					player.getStatistics().add(savedStatistic);
 				}
 			}
 		}
-		return statisticSet;
 	}
 	
 	public void updateStatistics(JsonArray firstPlayerArray, Fixture fixture) throws InterruptedException {
 		var gson = super.getGson();
-		var statisticSet = new HashSet<Statistic>();
 		if (firstPlayerArray.isJsonNull() || firstPlayerArray.isEmpty())
 			return;
 		
