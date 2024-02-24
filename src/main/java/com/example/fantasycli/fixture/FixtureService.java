@@ -30,6 +30,7 @@ import com.example.fantasycli.fixture.score.halftime.HalfTime;
 import com.example.fantasycli.fixture.score.penaltytime.PenaltyTime;
 import com.example.fantasycli.fixture.statistic.Statistic;
 import com.example.fantasycli.fixture.statistic.StatisticRepository;
+import com.example.fantasycli.fixture.statistic.StatisticService;
 import com.example.fantasycli.fixture.statistic.card.Card;
 import com.example.fantasycli.fixture.statistic.dribble.Dribble;
 import com.example.fantasycli.fixture.statistic.duel.Duel;
@@ -58,7 +59,7 @@ public class FixtureService extends GlobalService {
 	private final VenueRepository venueRepository;
 	private final TeamRepository teamRepository;
 	private final PlayerRepository playerRepository;
-	private final StatisticRepository statisticRepository;
+	private final StatisticService statisticService;
 	private final Logger logger = LoggerFactory.getLogger(FixtureService.class);
 
 	
@@ -85,7 +86,7 @@ public class FixtureService extends GlobalService {
 			var homeTeam = getHomeTeam(element);
 			var awayTeam = getAwayTeam(element);
 			var score = getScore(element, fixture);
-			var statistics = getStatistics(playersArray, fixture);
+//			var statistics = getStatistics(playersArray, fixture);
 			status.setFixture(fixture);
 			homeTeam.setFixture(fixture);
 			awayTeam.setFixture(fixture);
@@ -115,11 +116,14 @@ public class FixtureService extends GlobalService {
 				fix.get().setHomeTeam(homeT);
 				fix.get().setScore(fixScore);
 				fix.get().setFixture(fixture);
-//				fix.get().setStatistics(statistics);
+				statisticService.updateStatistics(playersArray, fix.get());
+				statisticService.getStatistics(playersArray, fix.get());
+				
+//				fix.get().setStatistics(d);
 
 				logger.info(fix.toString());
 			} else {
-				System.out.println("tu");
+				System.out.println("tu sam");
 				TimeUnit.SECONDS.sleep(5);
 				var savedFixture = fixtureRepository.save(fixture);
 
@@ -127,7 +131,7 @@ public class FixtureService extends GlobalService {
 				savedFixture.setHomeTeam(homeTeam);
 				savedFixture.setAwayTeam(awayTeam);
 				savedFixture.setScore(score);
-				savedFixture.setStatistics(statistics);
+//				savedFixture.setStatistics(statistics);
 
 				logger.info(savedFixture.toString());
 			}
@@ -447,61 +451,6 @@ public class FixtureService extends GlobalService {
 		return super.getGson().fromJson(penaltyObject, Penalty.class);
 	}
 	
-	////////////////////////////////////////////////////////////////////////////////////////////
-	
-	
-	
-	public Set<Statistic> getStatistics(JsonArray firstPlayerArray, Fixture fixture) {
-		var gson = super.getGson();
-		var statisticSet = new HashSet<Statistic>();
-		if (firstPlayerArray.isJsonNull() || firstPlayerArray.isEmpty())
-			return statisticSet;
-		
-		for (var firstPlayerElement : firstPlayerArray) {
-			var playersArray = firstPlayerElement.getAsJsonObject().getAsJsonArray("players");
-			if (playersArray.isJsonNull() || playersArray.isEmpty()) return statisticSet;
-			for (var element : playersArray) {
-				var player = getPlayer(element);
-				if (player == null) continue;
-				var statisticArray = element.getAsJsonObject().getAsJsonArray("statistics");
-				
-				for (var statisticElement : statisticArray) {
-					var statisticObject = statisticElement.getAsJsonObject();
-					
-					var statistic = gson.fromJson(statisticObject, Statistic.class);
-					var game = getGame(statisticObject);
-					var shot = getShot(statisticObject);
-					var goal = getGoal(statisticObject);
-					var pass = getPass(statisticObject);
-					var tackle = getTackle(statisticObject);
-					var dribble = getDribble(statisticObject);
-					var penalty = getPenalty(statisticObject);
-					var card = getCard(statisticObject);
-					var foul = getFoul(statisticObject);
-					var duel = getDuel(statisticObject);
-
-					statistic.setTackle(tackle);
-					statistic.setDribble(dribble);
-					statistic.setPenalty(penalty);
-					statistic.setCard(card);
-					statistic.setFoul(foul);
-					statistic.setDuel(duel);
-					statistic.setPass(pass);
-					statistic.setGoal(goal);
-					statistic.setGame(game);
-					statistic.setShot(shot);
-					statistic.setFixture(fixture);
-					statistic.setPlayer(player);
-
-					statisticSet.add(statistic);
-//					fixture.getStatistics().add(savedStatistic);
-//					player.getStatistics().add(savedStatistic);
-				}
-			}
-		}
-		return statisticSet;
-	}
-
 	//////////////////////////////////////////////////////////////
 	
 	public Set<Event> getEvents(JsonArray eventsArray, Fixture fixture) {
@@ -555,58 +504,6 @@ public class FixtureService extends GlobalService {
 			eventSet.add(event);
 		}
 		return eventSet;
-	}
-	
-	public void updateStatistic(JsonArray firstPlayerArray, Fixture fixture) {
-		var gson = super.getGson();
-		var statisticSet = new HashSet<Statistic>();
-		fixture.setStatistics(statisticSet);
-		if (firstPlayerArray.isJsonNull() || firstPlayerArray.isEmpty())
-			return;
-		
-		for (var firstPlayerElement : firstPlayerArray) {
-			var playersArray = firstPlayerElement.getAsJsonObject().getAsJsonArray("players");
-			if (playersArray.isJsonNull() || playersArray.isEmpty()) return;
-			for (var element : playersArray) {
-				var player = getPlayer(element);
-				if (player == null) continue;
-				var statisticArray = element.getAsJsonObject().getAsJsonArray("statistics");
-				
-				for (var statisticElement : statisticArray) {
-					var statisticObject = statisticElement.getAsJsonObject();
-					
-					var statistic = gson.fromJson(statisticObject, Statistic.class);
-					var game = getGame(statisticObject);
-					var shot = getShot(statisticObject);
-					var goal = getGoal(statisticObject);
-					var pass = getPass(statisticObject);
-					var tackle = getTackle(statisticObject);
-					var dribble = getDribble(statisticObject);
-					var penalty = getPenalty(statisticObject);
-					var card = getCard(statisticObject);
-					var foul = getFoul(statisticObject);
-					var duel = getDuel(statisticObject);
-
-					statistic.setTackle(tackle);
-					statistic.setDribble(dribble);
-					statistic.setPenalty(penalty);
-					statistic.setCard(card);
-					statistic.setFoul(foul);
-					statistic.setDuel(duel);
-					statistic.setPass(pass);
-					statistic.setGoal(goal);
-					statistic.setGame(game);
-					statistic.setShot(shot);
-					statistic.setFixture(fixture);
-					statistic.setPlayer(player);
-
-					statisticSet.add(statistic);
-//					fixture.getStatistics().add(savedStatistic);
-//					player.getStatistics().add(savedStatistic);
-				}
-			}
-		}
-		fixture.setStatistics(statisticSet);
 	}
 	
 	

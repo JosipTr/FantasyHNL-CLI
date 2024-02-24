@@ -9,7 +9,6 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
 @Table(name = "fouls")
 public class Foul {
 	@EmbeddedId

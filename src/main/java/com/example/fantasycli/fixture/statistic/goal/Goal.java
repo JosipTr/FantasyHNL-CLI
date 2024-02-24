@@ -19,7 +19,6 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
 @Table(name = "goals")
 public class Goal {
 	@EmbeddedId
