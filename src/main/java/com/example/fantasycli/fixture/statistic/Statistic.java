@@ -49,49 +49,16 @@ public class Statistic {
 	private Penalty penalty;
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "statistic")
 	private Goal goal;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@MapsId("playerId")
 	private Player player;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@MapsId("fixtureId")
 	private Fixture fixture;
 	
 	public Statistic() {
 		super();
 		this.id = new StatisticId();
-	}
-	
-	public void deleteStatistic() {
-//		this.id = null;
-		this.card.setStatistic(null);
-		this.dribble.setStatistic(null);
-		this.duel.setStatistic(null);
-//		this.fixture.setStatistics(null);
-		this.foul.setStatistic(null);
-		this.game.setStatistic(null);
-		this.goal.setStatistic(null);
-//		this.offsides = null;
-		this.pass.setStatistic(null);
-		this.penalty.setStatistic(null);
-//		this.player.setStatistics(null);
-		this.shot.setStatistic(null);
-		this.tackle.setStatistic(null);
-	}
-	
-	public void removeStatistic() {
-		this.getCard().setStatistic(null);
-		this.getDribble().setStatistic(null);
-		this.getCard().setStatistic(null);
-		this.getDuel().setStatistic(null);
-		this.getFoul().setStatistic(null);
-		this.getGame().setStatistic(null);
-		this.getGoal().setStatistic(null);
-		this.getPass().setStatistic(null);
-		this.getPenalty().setStatistic(null);
-		this.player = null;
-		this.fixture = null;
-		this.getShot().setStatistic(null);
-		this.getTackle().setStatistic(null);
 	}
 	
 	@Override

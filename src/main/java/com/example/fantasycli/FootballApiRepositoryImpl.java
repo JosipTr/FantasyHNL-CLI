@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-//@Repository
+@Repository
 public class FootballApiRepositoryImpl implements ApiRepository {
 
 	private final RestTemplate restTemplate;
