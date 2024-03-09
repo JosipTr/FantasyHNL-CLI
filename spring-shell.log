@@ -328,3 +328,20 @@
 1708801660379:hh --fixtureId 1034697
 1708801679830:hh --fixtureId 1034715
 1708801814800:hh --fixtureId 1034794
+1708856401982:send
+1708856406677:send --message hej
+1708856728996:send --message "hej"
+1708856978524:send --message "he"
+1708857136669:send --message dd
+1708857305297:send --message hej
+1708857413525:send --message Kristin Turkalj
+1708857425817:send --message Ja sam
+1708857856406:send --message h
+1708867890474:send --message g
+1708868092316:send --message h
+1708868298183:send --message g
+1708868981689:send --message h
+1708870902759:send --fixtureId 103482
+1708870917755:send --fixtureId 1034682
+1708871106649:send --fixtureId 103482
+1708873100463:send --fixtureId 1034682

@@ -15,6 +15,7 @@ import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.shell.standard.ShellComponent;
 
+import com.example.fantasycli.Producer;
 
 import jakarta.transaction.Transactional;
 
@@ -28,12 +29,14 @@ public class FixtureScheduler implements SchedulingConfigurer {
 	private int counter;
 	private final FixtureRepository repository;
 	private final FixtureService service;
+	private final Producer producer;
 
-	public FixtureScheduler(FixtureRepository repository, FixtureService service) {
+	public FixtureScheduler(FixtureRepository repository, FixtureService service, Producer producer) {
 		super();
 		this.counter = 0;
 		this.repository = repository;
 		this.service = service;
+		this.producer = producer;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -68,7 +71,8 @@ public class FixtureScheduler implements SchedulingConfigurer {
 	public void updateLiveFixture(int fixtureId) throws InterruptedException {
 		counter++;
 		service.getFixture(fixtureId);
-		System.out.println("da da");
+		var data = repository.getReferenceById(fixtureId);
+		producer.sendMessage(String.valueOf(fixtureId));
 	}
 
 	public void stop(ScheduledTaskRegistrar taskRegistrar) {

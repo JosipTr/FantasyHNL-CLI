@@ -15,6 +15,9 @@ import com.example.fantasycli.fixture.hometeam.HomeTeam;
 import com.example.fantasycli.fixture.score.Score;
 import com.example.fantasycli.fixture.statistic.Statistic;
 import com.example.fantasycli.venue.Venue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.gson.annotations.Expose;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,9 +42,11 @@ public class Fixture {
 	private GameStatus status;
 	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private HomeTeam homeTeam;
+	@Expose
 	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
 	private AwayTeam awayTeam;
 	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fixture")
+	@Expose
 	private Score score;
 	@OneToMany(mappedBy = "fixture", cascade = CascadeType.PERSIST)
 	private Set<Event> event = new HashSet<>();
